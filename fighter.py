@@ -1,4 +1,5 @@
 import pygame
+import time
 
 class Fighter():
   def __init__(self, player, x, y, flip, data, sprite_sheet, animation_steps, sound):
@@ -73,27 +74,7 @@ class Fighter():
             self.attack_type = 2
 
 
-      # check player 2 controls
-      if self.player == 2:
-        #movement
-        if key[pygame.K_LEFT]:
-          dx = -SPEED
-          self.running = True
-        if key[pygame.K_RIGHT]:
-          dx = SPEED
-          self.running = True
-        #jump
-        if key[pygame.K_UP] and self.jump == False:
-          self.vel_y = -30
-          self.jump = True
-        #attack
-        if key[pygame.K_KP1] or key[pygame.K_KP2]:
-          self.attack(target)
-          #determine which attack type was used
-          if key[pygame.K_KP1]:
-            self.attack_type = 1
-          if key[pygame.K_KP2]:
-            self.attack_type = 2
+
 
 
     #apply gravity
@@ -152,19 +133,18 @@ class Fighter():
           else:
             self.flip = True
 
-          # 如果在攻击范围内，执行攻击
           if abs(dist_x) <= ATTACK_RANGE:
               self.attack(target)
-
+              self.attacking = False
 
       # 更新玩家2的位置
-      self.rect.x += dx
-      self.rect.y += dy
+          self.rect.x += dx
+          self.rect.y += dy
 
 
   #handle animation updates
   def update(self):
-    #check what action the player is performing
+    #檢查玩家正在執行什麼動作
     if self.health <= 0:
       self.health = 0
       self.alive = False
@@ -184,27 +164,27 @@ class Fighter():
       self.update_action(0)#0:idle
 
     animation_cooldown = 50
-    #update image
+    #更新影像
     self.image = self.animation_list[self.action][self.frame_index]
-    #check if enough time has passed since the last update
+    #檢查自上次更新以來是否已經過了足夠的時間
     if pygame.time.get_ticks() - self.update_time > animation_cooldown:
       self.frame_index += 1
       self.update_time = pygame.time.get_ticks()
-    #check if the animation has finished
+    #檢查動畫是否完成
     if self.frame_index >= len(self.animation_list[self.action]):
-      #if the player is dead then end the animation
+      #如果玩家死亡則結束動畫
       if self.alive == False:
         self.frame_index = len(self.animation_list[self.action]) - 1
       else:
         self.frame_index = 0
-        #check if an attack was executed
+        #檢查是否執行了攻擊
         if self.action == 3 or self.action == 4:
           self.attacking = False
           self.attack_cooldown = 20
-        #check if damage was taken
+        #檢查是否有損壞
         if self.action == 5:
           self.hit = False
-          #if the player was in the middle of an attack, then the attack is stopped
+          #如果玩家正在攻擊，那麼攻擊就會停止
           self.attacking = False
           self.attack_cooldown = 20
 
