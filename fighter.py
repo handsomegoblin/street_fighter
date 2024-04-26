@@ -27,7 +27,7 @@ class Fighter():
 
 
   def load_images(self, sprite_sheet, animation_steps):
-    #extract images from spritesheet
+    #從精靈表中擷取影像
     animation_list = []
     for y, animation in enumerate(animation_steps):
       temp_img_list = []
@@ -46,10 +46,10 @@ class Fighter():
     self.running = False
     self.attack_type = 0
 
-    #get keypresses
+    #取得按鍵
     key = pygame.key.get_pressed()
 
-    #can only perform other actions if not currently attacking
+    #如果目前沒有攻擊，則只能執行其他操作
     if self.attacking == False and self.alive == True and round_over == False:
       #check player 1 controls
       if self.player == 1:
@@ -64,10 +64,10 @@ class Fighter():
         if key[pygame.K_w] and self.jump == False:
           self.vel_y = -30
           self.jump = True
-        #attack
+        #攻擊
         if key[pygame.K_r] or key[pygame.K_t]:
           self.attack(target)
-          #determine which attack type was used
+          #確定使用了哪種攻擊類型
           if key[pygame.K_r]:
             self.attack_type = 1
           if key[pygame.K_t]:
@@ -77,11 +77,11 @@ class Fighter():
 
 
 
-    #apply gravity
+    #施加重力
     self.vel_y += GRAVITY
     dy += self.vel_y
 
-    #ensure player stays on screen
+    #確保玩家停留在螢幕上
     if self.rect.left + dx < 0:
       dx = -self.rect.left
     if self.rect.right + dx > screen_width:
@@ -91,20 +91,20 @@ class Fighter():
       self.jump = False
       dy = screen_height - 110 - self.rect.bottom
 
-    #ensure players face each other
+    #確保玩家面對面
     if target.rect.centerx > self.rect.centerx:
       self.flip = False
     else:
       self.flip = True
-    #apply attack cooldown
+    #應用攻擊冷卻時間
     if self.attack_cooldown > 0:
       self.attack_cooldown -= 1
 
 
-    #update player position
+    #更新玩家位置
     self.rect.x += dx
     self.rect.y += dy
-
+    
 
   def computer_control(self, screen_width, screen_height, surface, target, round_over):
       dx = 0
@@ -115,7 +115,9 @@ class Fighter():
       self.running = False
       self.attack_type = 0
 
-      if self.alive and not self.attacking:
+      key = pygame.key.get_pressed()
+
+      if self.attacking == False and self.alive == True and round_over == False:
           # 计算玩家2与目标的水平和垂直距离
           dist_x = target.rect.centerx - self.rect.centerx
           dist_y = target.rect.centery - self.rect.centery
@@ -133,16 +135,23 @@ class Fighter():
           else:
             self.flip = True
 
-          if abs(dist_x) <= ATTACK_RANGE:
-              self.attack(target)
+          if abs(dist_x) <= ATTACK_RANGE:         
+              self.ult_attack(target)
               self.attacking = False
+
+
+          if self.attack_cooldown > 0:
+              self.attack_cooldown -= 1
 
       # 更新玩家2的位置
           self.rect.x += dx
           self.rect.y += dy
 
 
-  #handle animation updates
+
+
+
+  #處理動畫更新
   def update(self):
     #檢查玩家正在執行什麼動作
     if self.health <= 0:
@@ -189,9 +198,19 @@ class Fighter():
           self.attack_cooldown = 20
 
 
+  def ult_attack(self, target):
+    if self.attack_cooldown == 0:
+      self.attacking = True
+      self.attack_sound.play()
+      attacking_rect = pygame.Rect(self.rect.centerx - (2 * self.rect.width * self.flip), self.rect.y, 2 * self.rect.width, self.rect.height)
+      if attacking_rect.colliderect(target.rect):
+        target.health -= 10
+        target.hit = True
+
+
   def attack(self, target):
     if self.attack_cooldown == 0:
-      #execute attack
+      #執行攻擊
       self.attacking = True
       self.attack_sound.play()
       attacking_rect = pygame.Rect(self.rect.centerx - (2 * self.rect.width * self.flip), self.rect.y, 2 * self.rect.width, self.rect.height)
@@ -201,10 +220,10 @@ class Fighter():
 
 
   def update_action(self, new_action):
-    #check if the new action is different to the previous one
+    #檢查新動作是否與前一個動作不同
     if new_action != self.action:
       self.action = new_action
-      #update the animation settings
+      #更新動畫設定
       self.frame_index = 0
       self.update_time = pygame.time.get_ticks()
 

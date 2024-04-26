@@ -21,14 +21,14 @@ RED = (255, 0, 0)
 YELLOW = (255, 255, 0)
 WHITE = (255, 255, 255)
 
-#define game variables
+#定義遊戲變數
 intro_count = 3
 last_count_update = pygame.time.get_ticks()
 score = [0, 0]#player scores. [P1, P2]
 round_over = False
 ROUND_OVER_COOLDOWN = 2000
 
-#define fighter variables
+#定義戰鬥變數
 WARRIOR_SIZE = 162
 WARRIOR_SCALE = 4
 WARRIOR_OFFSET = [72, 56]
@@ -47,35 +47,35 @@ sword_fx.set_volume(0.5)
 magic_fx = pygame.mixer.Sound("assets/audio/magic.wav")
 magic_fx.set_volume(0.75)
 
-#load background image
+#載入背景圖片
 bg_image = pygame.image.load("assets/images/background/background.jpg").convert_alpha()
 
-#load spritesheets
+#載入精靈表
 warrior_sheet = pygame.image.load("assets/images/warrior/Sprites/warrior.png").convert_alpha()
 wizard_sheet = pygame.image.load("assets/images/wizard/Sprites/wizard.png").convert_alpha()
 
-#load vicory image
+#載入勝利圖像
 victory_img = pygame.image.load("assets/images/icons/victory.png").convert_alpha()
 
-#define number of steps in each animation
+#定義每個動畫的步數
 WARRIOR_ANIMATION_STEPS = [10, 8, 1, 7, 7, 3, 7]
 WIZARD_ANIMATION_STEPS = [8, 8, 1, 8, 8, 3, 7]
 
-#define font
+#定義字體
 count_font = pygame.font.Font("assets/fonts/turok.ttf", 80)
 score_font = pygame.font.Font("assets/fonts/turok.ttf", 30)
 
-#function for drawing text
+#繪製文字的函數
 def draw_text(text, font, text_col, x, y):
   img = font.render(text, True, text_col)
   screen.blit(img, (x, y))
 
-#function for drawing background
+#繪製背景的函數
 def draw_bg():
   scaled_bg = pygame.transform.scale(bg_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
   screen.blit(scaled_bg, (0, 0))
 
-#function for drawing fighter health bars
+#繪製戰鬥機生命條的函數
 def draw_health_bar(health, x, y):
   ratio = health / 100
   pygame.draw.rect(screen, WHITE, (x - 2, y - 2, 404, 34))
@@ -96,7 +96,7 @@ while run:
   #draw background
   draw_bg()
 
-  #show player stats
+  #顯示玩家統計數據
   draw_health_bar(fighter_1.health, 20, 20)
   draw_health_bar(fighter_2.health, 580, 20)
   draw_text("P1: " + str(score[0]), score_font, RED, 20, 60)
@@ -120,7 +120,7 @@ while run:
 
 
 
-  #update fighters
+  #更新戰士
   fighter_1.update()
   fighter_2.update()
 
@@ -158,7 +158,7 @@ while run:
       run = False
 
 
-  #update display
+  #更新顯示
   pygame.display.update()
 
 #exit pygame
