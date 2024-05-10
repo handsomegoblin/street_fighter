@@ -115,37 +115,50 @@ class Fighter():
       self.running = False
       self.attack_type = 0
 
-      key = pygame.key.get_pressed()
+      if self.player == 2:
 
-      if self.attacking == False and self.alive == True and round_over == False:
-          # 计算玩家2与目标的水平和垂直距离
-          dist_x = target.rect.centerx - self.rect.centerx
-          dist_y = target.rect.centery - self.rect.centery
+          if self.attacking == False and self.alive == True and round_over == False:
+              # 计算玩家2与目标的水平和垂直距离
+              dist_x = target.rect.centerx - self.rect.centerx
+              dist_y = target.rect.centery - self.rect.centery
 
-          # 控制水平移动
-          if abs(dist_x) > ATTACK_RANGE:
-              if dist_x < 0:
-                  dx = -SPEED
-                  self.running = True
-              elif dist_x > 0:
-                  dx = SPEED
-                  self.running = True
-          if target.rect.centerx > self.rect.centerx:
-            self.flip = False
-          else:
-            self.flip = True
+              # 控制水平移动
+              if abs(dist_x) > ATTACK_RANGE:
+                  if dist_x < 0:
+                      dx = -SPEED
+                      self.running = True
+                  elif dist_x > 0:
+                      dx = SPEED
+                      self.running = True
+              if target.rect.centerx > self.rect.centerx:
+                self.flip = False
+              else:
+                self.flip = True
 
-          if abs(dist_x) <= ATTACK_RANGE:         
-              self.ult_attack(target)
-              self.attacking = False
+              if abs(dist_x) <= ATTACK_RANGE:
+                  import random
+                  attack_choice = random.choice([0,0,0,1,2])
+
+                  if attack_choice == 0:
+                    pass
+                  if attack_choice == 1:
+                    self.attack_type = 1
+                    self.attack(target)
+                    self.attack_cooldown = 8
+                  if attack_choice == 2:
+                    self.attack_type = 2
+                    self.attack(target)
+                    self.attack_cooldown = 8
+
+                  self.attacking = False
 
 
-          if self.attack_cooldown > 0:
-              self.attack_cooldown -= 1
+              if self.attack_cooldown > 0:
+                  self.attack_cooldown -= 1
 
-      # 更新玩家2的位置
-          self.rect.x += dx
-          self.rect.y += dy
+          # 更新玩家2的位置
+              self.rect.x += dx
+              self.rect.y += dy
 
 
 
@@ -196,17 +209,6 @@ class Fighter():
           #如果玩家正在攻擊，那麼攻擊就會停止
           self.attacking = False
           self.attack_cooldown = 20
-
-
-  def ult_attack(self, target):
-    if self.attack_cooldown == 0:
-      self.attacking = True
-      self.attack_sound.play()
-      attacking_rect = pygame.Rect(self.rect.centerx - (2 * self.rect.width * self.flip), self.rect.y, 2 * self.rect.width, self.rect.height)
-      if attacking_rect.colliderect(target.rect):
-        target.health -= 10
-        target.hit = True
-
 
   def attack(self, target):
     if self.attack_cooldown == 0:
